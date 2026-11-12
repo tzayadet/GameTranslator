@@ -519,6 +519,13 @@ def scan_game_dir(game_dir: Path) -> list[ScannedFile]:
         dirs[:] = [d for d in dirs if not _dir_is_ignored(d)]
         for fname in files:
             fpath = Path(root) / fname
+            # No seguir enlaces simbólicos: podrían apuntar fuera de la carpeta del juego.
+            if fpath.is_symlink():
+                continue
+            try:
+                fpath.resolve(strict=True).relative_to(game_dir.resolve())
+            except (OSError, ValueError):
+                continue
             kind = classify_file(fpath)
             if kind is None:
                 continue
@@ -921,10 +928,29 @@ def restore_from_backup(cfg: RunConfig) -> None:
     if not backups:
         log("No hay backups registrados para restaurar (¿usaste --mode patch-inplace antes?).")
         return
+    root = cfg.game_dir.resolve()
     for rel_path, bak_rel in backups.items():
-        original = cfg.game_dir / rel_path
-        backup = cfg.game_dir / bak_rel
-        if backup.exists():
+        if not isinstance(rel_path, str) or not isinstance(bak_rel, str):
+            log("  ! Entrada de backup no válida; se omite.")
+            continue
+
+        original = root / rel_path
+        backup = root / bak_rel
+        if original.is_symlink() or backup.is_symlink():
+            log(f"  ! Enlace simbólico detectado para {rel_path}; se omite.")
+            continue
+
+        try:
+            original = original.resolve()
+            backup = backup.resolve(strict=True)
+            original.relative_to(root)
+            backup.relative_to(root)
+        except (OSError, ValueError):
+            log(f"  ! Ruta de restauración fuera de la carpeta del juego o no válida: {rel_path}")
+            continue
+
+        if backup.is_file():
+            original.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(backup, original)
             log(f"Restaurado: {rel_path}")
         else:
@@ -1021,9 +1047,17 @@ def process_file(sf: ScannedFile, cfg: RunConfig, translate_fn: TranslateFn,
         if target_path is not None:
             write_text_smart(target_path, new_content, encoding)
         else:
-            rel = str(sf.path.relative_to(cfg.game_dir))
+            game_root = cfg.game_dir.resolve()
+            if sf.path.is_symlink():
+                raise ValueError("El archivo de origen es un enlace simbólico; se omite por seguridad.")
+            source_path = sf.path.resolve(strict=True)
+            source_path.relative_to(game_root)
+
+            rel = str(source_path.relative_to(game_root))
             bak_rel = rel + ".bak"
-            bak_path = cfg.game_dir / bak_rel
+            bak_path = game_root / bak_rel
+            if bak_path.is_symlink():
+                raise ValueError("El archivo de backup es un enlace simbólico; se omite por seguridad.")
             if not bak_path.exists():
                 bak_path.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(sf.path, bak_path)
@@ -1097,7 +1131,9 @@ def run(cfg: RunConfig) -> RunStats:
             continue
         process_file(sf, cfg, translate_fn, manifest, stats, target_path=target_path)
 
-    cache.flush()
+    # Un dry-run no debe dejar archivos auxiliares dentro de la carpeta del juego.
+    if not cfg.dry_run:
+        cache.flush()
     if not cfg.dry_run and not use_add_language:
         save_manifest(cfg.game_dir, manifest)
 
