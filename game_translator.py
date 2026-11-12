@@ -241,8 +241,9 @@ def looks_like_translatable_text(value: str, min_len: int = 2) -> bool:
 # ==========================================================================
 
 class TranslationCache:
-    def __init__(self, path: Path):
+    def __init__(self, path: Path, persist: bool = True):
         self.path = path
+        self.persist = persist
         self.data: dict[str, str] = {}
         if path.exists():
             try:
@@ -261,11 +262,11 @@ class TranslationCache:
     def set(self, text: str, src: str, tgt: str, translated: str) -> None:
         self.data[self.key(text, src, tgt)] = translated
         self._dirty += 1
-        if self._dirty >= 25:
+        if self.persist and self._dirty >= 25:
             self.flush()
 
     def flush(self) -> None:
-        if self._dirty:
+        if self.persist and self._dirty:
             self.path.write_text(json.dumps(self.data, ensure_ascii=False, indent=0), encoding="utf-8")
             self._dirty = 0
 
@@ -1110,7 +1111,10 @@ def run(cfg: RunConfig) -> RunStats:
     source_lang = guess_source_lang(scanned, translator, cfg.source_lang)
     log(f"Idioma origen detectado/usado: '{source_lang}' -> destino: '{cfg.target_lang}'")
 
-    cache = TranslationCache(cfg.game_dir / ".game_translator_cache.json")
+    cache = TranslationCache(
+        cfg.game_dir / ".game_translator_cache.json",
+        persist=not cfg.dry_run,
+    )
     manifest = load_manifest(cfg.game_dir)
     translate_fn = make_translate_fn(translator, cache, source_lang, cfg.target_lang, stats)
 
