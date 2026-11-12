@@ -132,3 +132,14 @@ El modo `--dry-run` no modifica archivos del juego ni crea caché o manifiestos.
 4. Prueba el juego. Si algo no cuadra, `--restore` deshace un `patch-inplace`
    (el modo `add-language` nunca toca los originales, así que no hace falta
    restaurar nada: basta con borrar la carpeta de idioma generada).
+
+## Activar la demo en GitHub Pages
+
+La demo estática se encuentra en `docs/index.html`. Para publicarla:
+
+1. Abre **Settings → Pages** en este repositorio.
+2. En **Build and deployment**, selecciona **GitHub Actions** como fuente.
+3. En **Settings → Secrets and variables → Actions → Variables**, crea la variable de repositorio `ENABLE_PAGES` con el valor `true`.
+4. Guarda los cambios y realiza un nuevo push que modifique `docs/**` para iniciar el despliegue.
+
+Hasta completar esa configuración, la demo permanece como código fuente y no debe enlazarse como sitio publicado.
