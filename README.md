@@ -2,7 +2,7 @@
 
 [![GitHub Pages](https://github.com/tzayadet/GameTranslator/actions/workflows/pages.yml/badge.svg)](https://github.com/tzayadet/GameTranslator/actions/workflows/pages.yml)
 
-**Showcase:** https://tzayadet.github.io/GameTranslator/
+**Showcase source:** [docs/index.html](docs/index.html) · GitHub Pages deployment is ready but requires enabling Pages in repository settings.
 
 [![Game Translator CI](https://github.com/tzayadet/GameTranslator/actions/workflows/python-syntax.yml/badge.svg)](https://github.com/tzayadet/GameTranslator/actions/workflows/python-syntax.yml)
 
