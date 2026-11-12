@@ -1046,6 +1046,10 @@ def process_file(sf: ScannedFile, cfg: RunConfig, translate_fn: TranslateFn,
             return
 
         if target_path is not None:
+            if target_path.exists():
+                stats.files_skipped += 1
+                log(f"  ! Ya existe el destino; se conserva sin sobrescribir: {target_path.relative_to(cfg.game_dir)}")
+                return
             write_text_smart(target_path, new_content, encoding)
         else:
             game_root = cfg.game_dir.resolve()
