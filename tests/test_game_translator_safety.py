@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from game_translator import RunConfig, restore_from_backup, run, scan_game_dir
+from game_translator import (RunConfig, RunStats, ScannedFile, process_file, restore_from_backup, run, scan_game_dir)
 
 
 class FakeTranslator:
@@ -59,6 +59,43 @@ class GameTranslatorSafetyTests(unittest.TestCase):
 
             self.assertEqual(outside.read_text(encoding="utf-8"), "do not overwrite")
             self.assertFalse((root / "safe.txt").exists())
+
+    def test_add_language_does_not_overwrite_existing_translation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "game"
+            source_dir = root / "tl" / "english"
+            target_dir = root / "tl" / "spanish"
+            source_dir.mkdir(parents=True)
+            target_dir.mkdir(parents=True)
+            source = source_dir / "dialogue.json"
+            target = target_dir / "dialogue.json"
+            source.write_text(json.dumps({"line": "Hello there"}), encoding="utf-8")
+            target.write_text(json.dumps({"line": "Traducción humana"}), encoding="utf-8")
+
+            config = RunConfig(game_dir=root, mode="add-language")
+            scanned = ScannedFile(
+                path=source,
+                kind="json",
+                lang_hint="en",
+                lang_hint_folder="english",
+            )
+            stats = RunStats()
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                process_file(
+                    scanned,
+                    config,
+                    lambda text: "Traducción automática",
+                    {"backups": {}},
+                    stats,
+                    target_path=target,
+                )
+
+            self.assertEqual(
+                json.loads(target.read_text(encoding="utf-8")),
+                {"line": "Traducción humana"},
+            )
+            self.assertEqual(stats.files_skipped, 1)
 
     def test_scanner_skips_symbolic_links(self):
         with tempfile.TemporaryDirectory() as tmp:
