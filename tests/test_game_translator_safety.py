@@ -21,9 +21,7 @@ class GameTranslatorSafetyTests(unittest.TestCase):
     def test_dry_run_does_not_modify_game_or_create_cache(self):
         with tempfile.TemporaryDirectory() as tmp:
             game_dir = Path(tmp)
-            data_dir = game_dir / "data"
-            data_dir.mkdir()
-            source = data_dir / "Map001.json"
+            source = game_dir / "localization.json"
             original = {f"dialogue_{i}": f"Hello there, this is dialogue number {i}." for i in range(30)}
             source.write_text(json.dumps(original), encoding="utf-8")
 
@@ -43,7 +41,7 @@ class GameTranslatorSafetyTests(unittest.TestCase):
             self.assertEqual(json.loads(source.read_text(encoding="utf-8")), original)
             self.assertFalse((game_dir / ".game_translator_cache.json").exists())
             self.assertFalse((game_dir / ".game_translator_manifest.json").exists())
-            self.assertFalse((data_dir / "Map001.json.bak").exists())
+            self.assertFalse((game_dir / "localization.json.bak").exists())
 
     def test_restore_rejects_backup_outside_game_directory(self):
         with tempfile.TemporaryDirectory() as tmp:
