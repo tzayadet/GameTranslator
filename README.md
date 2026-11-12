@@ -1,5 +1,7 @@
 # Game Translator — traductor/parcheador automático de diálogos de videojuegos
 
+[![Game Translator CI](https://github.com/tzayadet/GameTranslator/actions/workflows/python-syntax.yml/badge.svg)](https://github.com/tzayadet/GameTranslator/actions/workflows/python-syntax.yml)
+
 Detecta los archivos de texto/diálogo de la carpeta de un juego, los traduce
 y parchea el juego para jugar en español: **o bien añade español como idioma
 nuevo** (si el juego ya soporta varios idiomas), **o bien sustituye el texto
