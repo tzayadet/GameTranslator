@@ -1,77 +1,84 @@
+<p align="center">
+  <img src="https://img.shields.io/badge/LOCALIZATION-GAME_TRANSLATOR-101010?style=for-the-badge&labelColor=050805&color=00FF41" alt="Game Translator"/>
+  <img src="https://img.shields.io/badge/PYTHON-DESKTOP_%2F_CLI-101010?style=for-the-badge&logo=python&logoColor=00FF41" alt="Python"/>
+</p>
+
 # Game Translator
 
-[![GitHub Pages](https://github.com/tzayadet/GameTranslator/actions/workflows/pages.yml/badge.svg)](https://github.com/tzayadet/GameTranslator/actions/workflows/pages.yml)
-[![Python checks](https://github.com/tzayadet/GameTranslator/actions/workflows/python-syntax.yml/badge.svg)](https://github.com/tzayadet/GameTranslator/actions/workflows/python-syntax.yml)
+Python desktop and CLI toolkit for localising supported game text files. It can create separate language files or apply in-place changes with backups and a restoration manifest.
 
-**Project showcase:** [Open the project page](https://tzayadet.github.io/GameTranslator/) · [Showcase source](docs/index.html)
+<p align="center">
+  <a href="https://tzayadet.github.io/GameTranslator/"><strong>PROJECT SHOWCASE ↗</strong></a> ·
+  <a href="https://github.com/tzayadet/GameTranslator"><strong>SOURCE CODE</strong></a>
+</p>
 
-Herramienta Python de escritorio y CLI para localizar diálogos de videojuegos a partir de archivos de texto reconocibles. Puede crear archivos de idioma nuevos o aplicar cambios in-place con copias de seguridad y manifiesto de restauración.
+[![GitHub Pages](https://github.com/tzayadet/GameTranslator/actions/workflows/pages.yml/badge.svg)](https://github.com/tzayadet/GameTranslator/actions/workflows/pages.yml) · [![Python checks](https://github.com/tzayadet/GameTranslator/actions/workflows/python-syntax.yml/badge.svg)](https://github.com/tzayadet/GameTranslator/actions/workflows/python-syntax.yml)
 
-## Características
+## Features
 
-- Escaneo de directorios y reconocimiento de formatos de localización.
-- Traducción local mediante Argos Translate.
-- Motor HTTP configurable y modo noop para pruebas.
-- Simulación mediante `--dry-run`.
-- Creación de copias de seguridad y restauración mediante `--restore`.
-- Caché de traducciones para reducir trabajo repetido.
-- Conservación de originales cuando la estructura del juego permite añadir un idioma separado.
+- Scans directories and recognises supported localisation formats.
+- Performs local translation through Argos Translate.
+- Supports a configurable HTTP engine and a no-op mode for tests.
+- Provides `--dry-run` previews.
+- Creates backups and supports restoration through `--restore`.
+- Caches translations to reduce repeated work.
+- Preserves original files when a game supports separate language files.
 
-## Instalación
+## Install
 
 ```bash
 python -m venv .venv
 ```
 
-Windows PowerShell:
-
+**Windows PowerShell**
 ```powershell
 .venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 ```
 
-Linux:
-
+**Linux**
 ```bash
 source .venv/bin/activate
 python -m pip install -r requirements.txt
 sudo apt install python3-tk
 ```
 
-## Uso
+## Run
 
-Interfaz:
+Desktop interface:
 
 ```bash
 python game_translator.py
 ```
 
-Simulación sin modificar archivos:
+Preview changes without modifying files:
 
 ```bash
-python game_translator.py --game-dir "/ruta/al/juego" --dry-run
+python game_translator.py --game-dir "/path/to/game" --dry-run
 ```
 
-Restaurar un parcheo in-place:
+Restore an in-place patch:
 
 ```bash
-python game_translator.py --game-dir "/ruta/al/juego" --restore
+python game_translator.py --game-dir "/path/to/game" --restore
 ```
 
-La primera descarga del modelo de Argos requiere conexión a Internet. Después, la traducción local puede funcionar sin conexión.
+The first Argos model download requires an Internet connection. Once installed, local translation can work offline.
 
-## Pruebas
+## Tests
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-## Límites y precauciones
+## Scope and precautions
 
-La compatibilidad depende de los formatos y estructuras reconocidos. No procesa directamente paquetes binarios propietarios ni archivos cifrados. Conserva una copia externa del directorio del juego y empieza siempre con `--dry-run`.
+Compatibility depends on the supported file formats and game structures. The tool does not directly process proprietary binary packages or encrypted files. Keep an external backup of the game directory and start with `--dry-run`.
 
-La página de GitHub Pages es una presentación estática; no ejecuta traducciones ni aloja archivos de juegos. Para publicarla, activa GitHub Pages en **Settings → Pages → Build and deployment → Source → GitHub Actions** y ejecuta el workflow correspondiente.
+## Showcase and deployment
 
-## Licencia
+The [GitHub Pages showcase](https://tzayadet.github.io/GameTranslator/) is a static project page. It does not execute translations or host game files. Pages deployment is defined in `.github/workflows/pages.yml`.
 
-Consulta [LICENSE](LICENSE).
+## License
+
+See [LICENSE](LICENSE).
