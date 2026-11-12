@@ -121,7 +121,7 @@ funcione con el 100% de los juegos, porque no todos guardan el texto igual:
 1. Haz una copia completa de la carpeta del juego (por si acaso).
 2. `python game_translator.py --game-dir "<carpeta>" --dry-run` y revisa el
    resumen (cuántos archivos detecta, de qué tipo).
-El modo `--dry-run` no modifica archivos del juego ni crea caché o manifiestos. Los enlaces simbólicos se excluyen del escaneo y las rutas del manifiesto se validan antes de restaurar.
+El modo `--dry-run` no modifica archivos del juego ni crea caché o manifiestos. Los enlaces simbólicos se excluyen del escaneo, las rutas del manifiesto se validan antes de restaurar y los archivos de idioma destino que ya existen se conservan sin sobrescribir.
 3. Ejecuta sin `--dry-run`.
 4. Prueba el juego. Si algo no cuadra, `--restore` deshace un `patch-inplace`
    (el modo `add-language` nunca toca los originales, así que no hace falta
