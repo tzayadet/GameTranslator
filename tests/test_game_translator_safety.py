@@ -97,6 +97,44 @@ class GameTranslatorSafetyTests(unittest.TestCase):
             )
             self.assertEqual(stats.files_skipped, 1)
 
+    def test_add_language_rejects_symlinked_destination_folder(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "game"
+            source_dir = root / "tl" / "english"
+            source_dir.mkdir(parents=True)
+            outside_dir = Path(tmp) / "outside"
+            outside_dir.mkdir()
+            target_dir = root / "tl" / "spanish"
+            try:
+                target_dir.symlink_to(outside_dir, target_is_directory=True)
+            except (OSError, NotImplementedError):
+                self.skipTest("Symbolic links are not available in this environment")
+
+            source = source_dir / "dialogue.json"
+            source.write_text(json.dumps({"line": "Hello there"}), encoding="utf-8")
+            target = target_dir / "dialogue.json"
+            config = RunConfig(game_dir=root, mode="add-language")
+            scanned = ScannedFile(
+                path=source,
+                kind="json",
+                lang_hint="en",
+                lang_hint_folder="english",
+            )
+            stats = RunStats()
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                process_file(
+                    scanned,
+                    config,
+                    lambda text: "Traducción automática",
+                    {"backups": {}},
+                    stats,
+                    target_path=target,
+                )
+
+            self.assertFalse((outside_dir / "dialogue.json").exists())
+            self.assertEqual(len(stats.errors), 1)
+
     def test_scanner_skips_symbolic_links(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "game"
