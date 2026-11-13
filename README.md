@@ -8,7 +8,7 @@
 Python desktop and CLI toolkit for localising supported game text files. It can create separate language files or apply in-place changes with backups and a restoration manifest.
 
 <p align="center">
-  <a href="https://tzayadet.github.io/GameTranslator/"><strong>PROJECT SHOWCASE ↗</strong></a> ·
+  <a href="https://tzayadet.github.io/GameTranslator/"><strong>LIVE DEMO ↗</strong></a> ·
   <a href="https://github.com/tzayadet/GameTranslator"><strong>SOURCE CODE</strong></a>
 </p>
 
